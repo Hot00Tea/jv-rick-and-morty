@@ -13,7 +13,8 @@ import java.net.http.HttpResponse;
 @Component
 public class CharacterClient {
 
-    HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CharacterInputDto getCharacter (String url) {
 
@@ -24,16 +25,15 @@ public class CharacterClient {
 
         try {
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            ObjectMapper objectMapper = new ObjectMapper();
 
-            if (!response.body().startsWith("{")) {
+            int statusCode = response.statusCode();
+
+            if (statusCode < 200 || statusCode >= 300) {
                 System.err.println("Invalid response from API: " + response.body());
                 return null;
             }
 
-            CharacterInputDto character =
-                    objectMapper.readValue(response.body(), CharacterInputDto.class);
-            return character;
+            return objectMapper.readValue(response.body(), CharacterInputDto.class);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

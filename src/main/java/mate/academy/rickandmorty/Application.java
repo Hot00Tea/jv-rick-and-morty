@@ -2,7 +2,7 @@ package mate.academy.rickandmorty;
 
 import mate.academy.rickandmorty.dto.external.CharacterExternalDto;
 import mate.academy.rickandmorty.dto.external.CharacterInputDto;
-import mate.academy.rickandmorty.repisitory.CharacterRepository;
+import mate.academy.rickandmorty.repository.CharacterRepository;
 import mate.academy.rickandmorty.service.CharacterClient;
 import mate.academy.rickandmorty.service.CharacterService;
 import org.springframework.boot.ApplicationArguments;
@@ -46,6 +46,10 @@ public class Application implements ApplicationRunner {
 
         while (url != null) {
             CharacterInputDto result = characterClient.getCharacter(url);
+
+            if (result == null || result.getInfo() == null) {
+                break;
+            }
 
             url = result.getInfo().getNext();
             characters.addAll(result.getResults());

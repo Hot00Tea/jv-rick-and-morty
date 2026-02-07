@@ -2,7 +2,7 @@ package mate.academy.rickandmorty.service;
 
 import mate.academy.rickandmorty.dto.external.CharacterExternalDto;
 import mate.academy.rickandmorty.dto.internal.CharacterOutputDto;
-import mate.academy.rickandmorty.repisitory.CharacterRepository;
+import mate.academy.rickandmorty.repository.CharacterRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -36,6 +36,11 @@ public class CharacterService {
 
     public CharacterOutputDto getRandomCharacter() {
         long totalCharacters = characterRepository.count();
+
+        if (totalCharacters == 0) {
+            throw new RuntimeException("No characters found in database");
+        }
+
         Random random = new Random();
         int index = random.nextInt(0, (int) totalCharacters);
 
@@ -61,6 +66,7 @@ public class CharacterService {
 
         for (Character character : characterList) {
             CharacterOutputDto characterByName = new CharacterOutputDto();
+            characterByName.setId(character.getId());
             characterByName.setExternalId(character.getExternalId());
             characterByName.setName(character.getName());
             characterByName.setStatus(character.getStatus());
